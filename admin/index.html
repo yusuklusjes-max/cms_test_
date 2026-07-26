@@ -31,26 +31,23 @@
       background-color: var(--brand-primary-dark) !important;
     }
 
-    /* Verberg het Decap logo (het roze "D" icoon) volledig */
-    .nc-loginPage-logoIcon {
-      display: none !important;
-    }
-
-    /* Verberg de "Decap CMS" tekst naast het logo, en zet er eigen tekst voor in de plaats */
-    .nc-loginPage-title {
-      visibility: hidden;
-      position: relative;
-      height: 60px;
-    }
-    .nc-loginPage-title::after {
-      visibility: visible;
-      position: absolute;
-      left: 0;
-      top: 0;
-      content: "ggagsdhg";
+    /* Container waar we straks onze eigen tekst in zetten i.p.v. het logo */
+    #custom-logo-replacement {
+      display: none;
       font-weight: 700;
       font-size: 40px;
       color: white;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    #custom-logo-replacement.visible {
+      display: block;
+    }
+    /* Verberg elk element dat Decap zelf rendert als logo/svg op de inlogpagina */
+    svg[class*="logo" i],
+    [class*="logoIcon" i],
+    [class*="LogoIcon" i] {
+      display: none !important;
     }
   </style>
 </head>
@@ -64,6 +61,44 @@
         body { font-family: -apple-system, sans-serif; }
       `);
     }
+
+    // Vervang het Decap-logo door eigen tekst, zodra het op de pagina verschijnt.
+    // We gebruiken een MutationObserver omdat Decap de loginpagina pas na het
+    // laden van het script dynamisch rendert (dus een gewone DOM-check bij page
+    // load is te vroeg).
+    const CUSTOM_TEXT = "ggagsdhg";
+
+    function replaceLogo() {
+      // Zoek elk svg-element op de pagina (het logo is altijd een <svg>)
+      const svgs = document.querySelectorAll("svg");
+      svgs.forEach((svg) => {
+        // Skip als we deze al verwerkt hebben
+        if (svg.dataset.logoHandled) return;
+
+        // Heuristiek: het Decap-logo staat bovenaan de inlogpagina,
+        // meestal binnen de eerste ~150px hoogte van de pagina
+        const rect = svg.getBoundingClientRect();
+        if (rect.top < 200 && rect.width > 20) {
+          svg.style.display = "none";
+          svg.dataset.logoHandled = "true";
+
+          // Zet onze eigen tekst ernaast, als die er nog niet staat
+          if (!document.getElementById("custom-logo-replacement")) {
+            const el = document.createElement("div");
+            el.id = "custom-logo-replacement";
+            el.className = "visible";
+            el.textContent = CUSTOM_TEXT;
+            svg.parentElement.insertBefore(el, svg);
+          }
+        }
+      });
+    }
+
+    const observer = new MutationObserver(replaceLogo);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Ook meteen proberen, voor het geval alles al geladen is
+    window.addEventListener("load", replaceLogo);
   </script>
 </body>
 </html>
