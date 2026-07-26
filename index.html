@@ -1,6 +1,10 @@
 <!doctype html>
 <html>
-<head><meta charset="utf-8"><title>Test site</title></head>
+<head>
+  <meta charset="utf-8">
+  <title>Test site</title>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
 <body>
   <h1 id="title">Laden...</h1>
   <p id="intro"></p>
@@ -12,5 +16,16 @@
         document.getElementById('intro').textContent = data.intro;
       });
   </script>
+  <script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("init", user => {
+        if (!user) {
+          window.netlifyIdentity.on("login", () => {
+            document.location.href = "/admin/";
+          });
+        }
+      });
+    }
+  </script>
 </body>
-</html>s
+</html>
