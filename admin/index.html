@@ -31,23 +31,25 @@
       background-color: var(--brand-primary-dark) !important;
     }
 
-    /* Login-scherm kaartje */
-    .nc-loginPage-logoIcon svg {
-      fill: var(--brand-primary) !important;
+    /* Verberg het Decap logo (het roze "D" icoon) volledig */
+    .nc-loginPage-logoIcon {
+      display: none !important;
     }
 
-    /* Verberg de "Decap CMS" / "Netlify CMS" naamgeving waar mogelijk */
+    /* Verberg de "Decap CMS" tekst naast het logo, en zet er eigen tekst voor in de plaats */
     .nc-loginPage-title {
       visibility: hidden;
       position: relative;
+      height: 60px;
     }
     .nc-loginPage-title::after {
       visibility: visible;
       position: absolute;
       left: 0;
       top: 0;
-      content: "Mijn Bedrijf";
+      content: "ggagsdhg";
       font-weight: 700;
+      font-size: 40px;
       color: white;
     }
   </style>
